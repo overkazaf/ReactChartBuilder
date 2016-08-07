@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="../src/lib/react.js"></script>
+	<script type="text/javascript" src="../src/lib/react-dom.js"></script>
+	<script type="text/javascript" src="../src/lib/browser.min.js"></script>
+	<script type="text/javascript" src="../src/lib/jquery.min.js"></script>
+	<style type="text/css">
+		
+		.block {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 200px;
+			height: 200px;
+			border: 1px solid #ccc;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<div id="app"></div>
+
+	<script type="text/babel">
+		var DraggedBlock = React.createClass({
+			getInitialState : function () {
+				return {
+					origin : {
+						left : 0,
+						top : 0
+					}
+				}
+			},
+			componentDidMount : function () {
+				this.setState({
+					position : {
+						position : 'absolute',
+						left : 0,
+						top : 0
+					}
+				});
+			},
+			handleDragStart : function (evt) {
+				var clientX = evt.clientX;
+				var clientY = evt.clientY;
+				var cs = document.defaultView.getComputedStyle(evt.target, null);
+				var left = cs.left;
+				var top = cs.top;
+				this.setState({
+					origin : {
+						currentX : clientX,
+						currentY : clientY,
+						left : left,
+						top : top
+					}
+				});
+
+			},
+			handleDrag : function (evt) {
+				var origin = this.state.origin;
+				var x = parseInt(origin.currentX);
+				var y = parseInt(origin.currentY);
+				var disX = evt.clientX - x;
+				var disY = evt.clientY - y;
+				this.setState({
+					position : {
+						position : 'absolute',
+						left : x + disX + 'px',
+						top : y + disY + 'px'
+					}
+				})
+			},
+			handleDragEnd : function (evt) {
+				var cs = document.defaultView.getComputedStyle(evt.target, null);
+				var left = cs.left;
+				var top = cs.top;
+				this.setState({
+					origin : {
+						left : left,
+						top : top
+					},
+					position : {
+						position : 'absolute',
+						left : left,
+						top : top
+					}
+				})
+			},
+			render : function () {
+				return (
+					<div
+						style={this.state.position}
+						className="block"
+						draggable="true"
+						onDragStart={this.handleDragStart}
+						onDragEnd={this.handleDragEnd}
+						onDrag={this.handleDrag}
+					/>
+				);
+			}
+		});
+
+		ReactDOM.render(
+			<DraggedBlock />,
+			document.getElementById('app')
+		);
+
+	</script>
+</body>
+</html>
